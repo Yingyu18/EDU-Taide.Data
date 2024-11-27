@@ -32,12 +32,16 @@ def search_in_folders(directory):
 def search_file(directory):            
     for item in os.listdir(directory):
         if item == f"{article_id}.txt":
-            '''read the article'''
-            path = os.path.join(directory, item)
-            print(path)
-            with open(path, "r") as file:
-                # print(path)
-                article = file.read()
+            article = ""
+            try: 
+                '''read the article'''
+                path = os.path.join(directory, item)
+                print(path)
+                with open(path, "r") as file:
+                    # print(path)
+                    article = file.read()
+            except Exception as e:
+                print(f"讀取檔案遇到問題： {e}")   
                 
             # print(article)
             ''' use 題目ID as the file name '''
@@ -80,8 +84,7 @@ for root, dirs, files in os.walk(directory):
                     article_id  = row['流水號']
 
                     '''Access article by school and dep and 流水號'''
-                    prefix = school
-                    
+                    prefix = school                   
                     search_in_folders("國師/打字區")
 
 

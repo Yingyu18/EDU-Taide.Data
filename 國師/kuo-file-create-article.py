@@ -13,6 +13,8 @@ import os
 import pandas as pd
 import fnmatch  
 
+
+
 def search_in_folders(directory):
     for item in os.listdir(directory):
         path = os.path.join(directory, item)
@@ -32,6 +34,7 @@ def search_in_folders(directory):
 def search_file(directory):            
     for item in os.listdir(directory):
         if item == f"{article_id}.txt":
+            count+=1
             article = ""
             try: 
                 '''read the article'''
@@ -59,34 +62,32 @@ def search_file(directory):
 
 directory = "國師/評分表"
 print(os.getcwd())
- 
-count = 0        
+    
 # Traverse all .xlsx files in the directory
 for root, dirs, files in os.walk(directory):
     for file in files:
-        if count == 0:
-            print(file)
-            if file.endswith('.xlsx'):
-                file_path = os.path.join(root, file)
+        #if count == 0:
+        print(file)
+        if file.endswith('.xlsx'):
+            file_path = os.path.join(root, file)
+            
+            # Load the Excel file
+            excel_file = pd.ExcelFile(file_path)
+            sheet_name = excel_file.sheet_names[0]
+            df = pd.read_excel(file_path, sheet_name=sheet_name)
+    
+            school = file[0:2]
+            dep = file[2:4]
+            
+            '''iterate each volume and combine 題目, article'''
+            for index, row in df.iterrows():
                 
-                # Load the Excel file
-                excel_file = pd.ExcelFile(file_path)
-                sheet_name = excel_file.sheet_names[0]
-                df = pd.read_excel(file_path, sheet_name=sheet_name)
-        
-                school = file[0:2]
-                dep = file[2:4]
-                
-                '''iterate each volume and combine 題目, article'''
-                for index, row in df.iterrows():
-                    
-                    vol = row['卷號']
-                    article_id  = row['流水號']
+                vol = row['卷號']
+                article_id  = row['流水號']
 
-                    '''Access article by school and dep and 流水號'''
-                    prefix = school                   
-                    search_in_folders("國師/打字區")
-
+                '''Access article by school and dep and 流水號'''
+                prefix = school                   
+                search_in_folders("國師/打字區")
 
 
 

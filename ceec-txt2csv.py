@@ -3,6 +3,7 @@ import csv, re, os
 # Define a function to extract fields from the text
 def parse_txt_file(filename):
     data = {}
+    
     '''Combine 題目'''
     year = ""
     # Regular expression pattern to capture the year

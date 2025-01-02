@@ -1,26 +1,22 @@
 import csv, re, os
 
 # Define a function to extract fields from the text
-def parse_txt_file(filename):
+def parse_txt_file(filename, file_path):
     data = {}
     '''Combine 題目'''
-    year = ""
-    # Regular expression pattern to capture the year
-    pattern = r"ceec-(\d+)-\d+-[A-Z]+\+?\.txt"  
+    parts = filename.split('-')
 
-    # Extract the year using re.search
-    match = re.search(pattern, filename)
-    if match:
-        year = match.group(1)
-        print(f"Extracted year: {year}")
-    else:
-        print("Year not found in the string.")    
+    # 解析各欄位
+    year = parts[0]       # 題目年份
+    dep = f"{parts[1]}-{parts[2]}" # 系所
+    number = parts[3]     # 編號
+
         
-    with open(f"file/題目/{year}.txt", 'r', encoding='utf-8') as file:    
+    with open(f"國師/題目/{year}.txt", 'r', encoding='utf-8') as file:    
         data["題目"] = file.read()
         
     '''Read .txt file'''
-    with open(filename, 'r', encoding='utf-8') as file:    
+    with open(file_path, 'r', encoding='utf-8') as file:    
         lines = file.readlines()
         
         # Combine lines to capture the content of the answer and fields more accurately
@@ -55,40 +51,61 @@ def write_to_csv(parsed_data, output_csv):
     print(f"Data has been written to {output_csv}")
 
 def main():
+    
+    field_names = [str(i) for i in range(1, 26)]
+
+    # 創建一個空表格（模擬為多行資料的列表，每行是字典）
+    table = []
+
+    # 新增一列資料
+    row = {field: 0 for field in field_names}  # 使用 None 作為初始值
+    table.append(row)
+    table = table[0]
+    print(table)
+    
     directory = "國師/答題/資料擴增"
-    file_name = "已生成C+檔案.csv"
+    file_name = "已生成A檔案.csv"
     deps = []
     with open(f'國師/答題/資料擴增/{file_name}', mode='r', encoding='utf-8') as file:
         reader = csv.reader(file)
         
         # 取得標題行
         header = next(reader)
-        target_index = header.index("dep")  # 找到目標欄位的索引
+        target_index = header.index("dep")  
         # 提取目標欄位的資料
         for row in reader:
             deps.append(row[target_index])  # 讀取特定欄位值
                 
     for dep in deps:
-        print(dep)
+        #print(dep)
         dep_path = f"{directory}/{dep}"
         if os.path.exists(dep_path):
             for root, dirs, files in os.walk(dep_path):
                 count = 0
                 for dir in dirs:
                     # print(dir)
-                    dir_path = f"{dep}/{dir}"
+                    dir_path = f"{dep_path}/{dir}"
+                    #print(dir_path)
                     for root, dirs, files in os.walk(dir_path):
                         for file in files:
                             # if file.endswith('.txt'):
                             file_path = os.path.join(root, file)
-                            print(file_path)
+                            #print(file_path)
                             # if file == "ceec-112-5-A+.txt":
-                            content = parse_txt_file(file_path)
+                            content = parse_txt_file(file, file_path)
+                            
+                            if content.get('總分'):
+                                print(content['總分'])
+                                table[content['總分']]+=1
                             file_name = file.replace("txt", "csv")
-                            directory_path = f"{directory}/csv/{dep}/{dir}/{file_name}"
-                            os.makedirs(directory_path, exist_ok=True)
-                            write_to_csv(content, f"{directory_path}/csv/{file}")
+                            output_path = f"{directory}/csv/{dep}/{dir}"
+                            os.makedirs(output_path, exist_ok=True)
+                            #print(output_path)
+                            #write_to_csv(content, f"{output_path}/{file_name}")
                     # print(directory, count)
+    print(table)
+
+
 
 if __name__ == "__main__":
     main()

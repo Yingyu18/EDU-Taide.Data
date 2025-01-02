@@ -34,7 +34,6 @@ def search_in_folders(directory):
 def search_file(directory):            
     for item in os.listdir(directory):
         if item == f"{article_id}.txt":
-            count+=1
             article = ""
             try: 
                 '''read the article'''
@@ -60,9 +59,11 @@ def search_file(directory):
 # .xlsx 檔名 = 拿到 0x0x 作為打字區追蹤  
 # 卷號 作為 題目.txt 追蹤
 
-directory = "國師/評分表"
+#directory = "國師/評分表"
+directory = "國師/評分表20241205"
 print(os.getcwd())
-    
+
+count=0 
 # Traverse all .xlsx files in the directory
 for root, dirs, files in os.walk(directory):
     for file in files:
@@ -81,13 +82,15 @@ for root, dirs, files in os.walk(directory):
             
             '''iterate each volume and combine 題目, article'''
             for index, row in df.iterrows():
-                
+                count+=1
                 vol = row['卷號']
                 article_id  = row['流水號']
 
                 '''Access article by school and dep and 流水號'''
                 prefix = school                   
-                search_in_folders("國師/打字區")
+                # search_in_folders("國師/打字區")
+                
+print(count)
 
 
 
